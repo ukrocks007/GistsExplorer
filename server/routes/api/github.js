@@ -1,4 +1,6 @@
 const request = require('superagent');
+const config = require('../../../config/config');
+var jwt = require('jsonwebtoken');
 
 module.exports = (app) => {
     app.get('/users/signin/callback', (req, res, next) => {
@@ -23,8 +25,15 @@ module.exports = (app) => {
                 })
                 .set('Accept', 'application/json')
                 .then(op => {
-                    res.send(op.body);
+                    var token = jwt.sign({ token: op.body.access_token }, "" + config.secret, {
+                        expiresIn: 86400 // expires in 24 hours
+                    });
+                    res.redirect('/?token='+token);
                 });
         }
+    });
+
+    app.get('/gists/', (req, res, next) => {
+        
     });
 };
