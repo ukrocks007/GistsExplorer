@@ -12,7 +12,7 @@ const config = require('../config/config');
 const webpackConfig = require('../webpack.config');
 
 const isDev = process.env.NODE_ENV !== 'production';
-const port  = process.env.PORT || 9000;
+const port = process.env.PORT || 9000;
 
 
 // Configuration
@@ -23,7 +23,9 @@ mongoose.connect(isDev ? config.db_dev : config.db);
 mongoose.Promise = global.Promise;
 
 const app = express();
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({
+  extended: true
+}));
 app.use(express.json());
 
 // API routes
@@ -36,27 +38,27 @@ if (isDev) {
     verbose: false
   }));
 
-  app.use(webpackDevMiddleware(compiler, {
-    publicPath: webpackConfig.output.publicPath,
-    contentBase: path.resolve(__dirname, '../client/public'),
-    stats: {
-      colors: true,
-      hash: false,
-      timings: true,
-      chunks: false,
-      chunkModules: false,
-      modules: false
-    }
-  }));
+  //   app.use(webpackDevMiddleware(compiler, {
+  //     publicPath: webpackConfig.output.publicPath,
+  //     contentBase: path.resolve(__dirname, '../client/public'),
+  //     stats: {
+  //       colors: true,
+  //       hash: false,
+  //       timings: true,
+  //       chunks: false,
+  //       chunkModules: false,
+  //       modules: false
+  //     }
+  //   }));
 
-  app.use(webpackHotMiddleware(compiler));
-  app.use(express.static(path.resolve(__dirname, '../dist')));
-} else {
-  app.use(express.static(path.resolve(__dirname, '../dist')));
-  app.get('*', function (req, res) {
-    res.sendFile(path.resolve(__dirname, '../dist/index.html'));
-    res.end();
-  });
+  //   app.use(webpackHotMiddleware(compiler));
+  //   app.use(express.static(path.resolve(__dirname, '../dist')));
+  // } else {
+  //   app.use(express.static(path.resolve(__dirname, '../dist')));
+  //   app.get('*', function (req, res) {
+  //     res.sendFile(path.resolve(__dirname, '../dist/index.html'));
+  //     res.end();
+  //   });
 }
 
 app.listen(port, '0.0.0.0', (err) => {

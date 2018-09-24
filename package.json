@@ -11,7 +11,8 @@
   "private": true,
   "scripts": {
     "start": "webpack -p --progress --profile --colors && node server",
-    "start:dev": "node server"
+    "start:client" : "cd client && npm run start",
+    "start:dev": "concurrently \"node server\" \"npm run start:client\""
   },
   "engines": {
     "node": ">=6"
@@ -20,6 +21,7 @@
     "@babel/preset-react": "^7.0.0-beta.42",
     "autoprefixer": "^8.2.0",
     "bcryptjs": "^2.4.3",
+    "concurrently": "^4.0.1",
     "connect-history-api-fallback": "^1.5.0",
     "copy-webpack-plugin": "^4.5.1",
     "express": "^4.16.3",
