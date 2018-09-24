@@ -1,21 +1,25 @@
 const request = require('superagent');
 const config = require('../../../config/config');
 var jwt = require('jsonwebtoken');
+var github = require('octonode');
 
 module.exports = (app) => {
     app.get('/users/signin/callback', (req, res, next) => {
-        const { query } = req;
+        const {
+            query
+        } = req;
         console.log(query);
 
-        const { code } = query;
+        const {
+            code
+        } = query;
 
         if (!code) {
             return res.send({
                 success: false,
                 message: 'Error: no code'
             });
-        }
-        else {
+        } else {
             request
                 .post('https://github.com/login/oauth/access_token')
                 .send({
@@ -25,7 +29,9 @@ module.exports = (app) => {
                 })
                 .set('Accept', 'application/json')
                 .then(op => {
-                    var token = jwt.sign({ token: op.body.access_token }, "" + config.secret, {
+                    var token = jwt.sign({
+                        token: op.body.access_token
+                    }, "" + config.secret, {
                         expiresIn: 86400 // expires in 24 hours
                     });
                     res.redirect('/?token=' + token);
@@ -47,10 +53,16 @@ module.exports = (app) => {
 
         var token = req.headers['x-access-token'];
         if (!token)
-            return res.status(401).send({ auth: false, message: 'No token provided.' });
+            return res.status(401).send({
+                auth: false,
+                message: 'No token provided.'
+            });
         else {
             jwt.verify(token, config.secret, function (err, decoded) {
-                if (err) return res.status(500).send({ auth: false, message: 'Failed to authenticate token.' });
+                if (err) return res.status(500).send({
+                    auth: false,
+                    message: 'Failed to authenticate token.'
+                });
                 console.log(decoded);
                 request
                     .get('https://api.github.com/gists/starred?access_token=' + decoded.token)
@@ -62,25 +74,33 @@ module.exports = (app) => {
         }
     });
 
-    app.post('/gists/star/:gist_id/', (req, res, next) => {
+    app.post('/gists/star/:gist_id', (req, res, next) => {
         console.log(req.params.gist_id);
 
         var token = req.headers['x-access-token'];
         if (!token)
-            return res.status(401).send({ auth: false, message: 'No token provided.' });
+            return res.status(401).send({
+                auth: false,
+                message: 'No token provided.'
+            });
         else {
             jwt.verify(token, config.secret, function (err, decoded) {
-                if (err) return res.status(500).send({ auth: false, message: 'Failed to authenticate token.' });
+                if (err) return res.status(500).send({
+                    auth: false,
+                    message: 'Failed to authenticate token.'
+                });
                 console.log(decoded);
 
-                //PUT /gists/:gist_id/star
-                request
-                    .post('https://api.github.com/gists/'+req.params.gist_id+'/star/?access_token=' + decoded.token)
-                    .set('Content-Length', '0')
-                    .then(function (result) {
-                        res.setHeader('Content-Type', 'application/json');
-                        res.send(result);
-                    });
+                var ghgist = github.client(decoded.token).gist();
+                console.log("starring " + req.params.gist_id);
+                ghgist.star(req.params.gist_id, error => {
+                    if(!error){
+                        res.status(200).send();
+                    }
+                    else{
+                        res.status(404).send("https://gist.github.com/"+req.params.gist_id);
+                    }
+                });
             });
         }
 
