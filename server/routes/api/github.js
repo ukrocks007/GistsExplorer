@@ -34,7 +34,8 @@ module.exports = (app) => {
                     }, "" + config.secret, {
                         expiresIn: 86400 // expires in 24 hours
                     });
-                    res.redirect('/?token=' + token);
+                    res.cookie("token", token, { secure:true, maxAge:120000, httpOnly: true });
+                    res.send();
                 });
         }
     });
@@ -46,7 +47,6 @@ module.exports = (app) => {
                 console.log("Got Gists list");
                 res.setHeader('Content-Type', 'application/json');
                 var data = JSON.parse(result.text);
-                console.log(data);
                 var array = data.map(function (gist, index) {
                     return { 
                         "key": gist.id,
@@ -69,7 +69,6 @@ module.exports = (app) => {
                 console.log("Got Gists list");
                 res.setHeader('Content-Type', 'application/json');
                 var data = JSON.parse(result.text);
-                console.log(data);
                 var array = data.map(function (gist, index) {
                     return { 
                         "key": gist.id,
