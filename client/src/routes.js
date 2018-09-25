@@ -9,7 +9,7 @@ export const makeMainRoutes = () => {
   return (
       <Router history={history}>
         <div>
-          <Route path="/" render={(props) => <App {...props} />} />}/>
+          <Route path="/" render={(props) => <App {...props} />} />}
         </div>
       </Router>
   );

@@ -100,28 +100,33 @@ module.exports = (app) => {
                 message: 'No token provided.'
             });
         else {
-            if (useJWT) {
-                jwt.verify(token, config.secret, function (err, decoded) {
-                    if (err) return res.status(500).send({
-                        auth: false,
-                        message: 'Failed to authenticate token.'
-                    });
-                    console.log(decoded);
-                    request
-                        .get('https://api.github.com/gists/starred?access_token=' + decoded.token)
-                        .then(function (result) {
-                            res.setHeader('Content-Type', 'application/json');
-                            res.send(result);
-                        });
-                });
-            } else {
+            // if (useJWT) {
+            //     jwt.verify(token, config.secret, function (err, decoded) {
+            //         if (err) return res.status(500).send({
+            //             auth: false,
+            //             message: 'Failed to authenticate token.'
+            //         });
+            //         console.log(decoded);
+            //         request
+            //             .get('https://api.github.com/gists/starred?access_token=' + decoded.token)
+            //             .then(function (result) {
+            //                 res.setHeader('Content-Type', 'application/json');
+            //                 res.send(result);
+            //             });
+            //     });
+            // } else {
+                console.log("Requesting for starred gists");
                 request
                     .get('https://api.github.com/gists/starred?access_token=' + token)
                     .then(function (result) {
+                        console.log("got response for starred gists");
                         res.setHeader('Content-Type', 'application/json');
                         res.send(result);
+                    }).catch(err=>{
+                        console.log(err);
+                        res.status(404).send(err);
                     });
-            }
+            // }
         }
     });
 

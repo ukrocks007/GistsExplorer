@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import logo from '../../assets/logo.svg';
 import './App.css';
 import Header from '../Header/Header';
 import GistsGroup from '../GistsGroup/GistsGroup';
@@ -18,17 +17,27 @@ class App extends Component {
       data: [],
       page: 1,
       per_page: 6,
+      starred: false,
     }
 
     console.log(this.props.location.search);
     if(this.props.location.search){
       let query = querystring.parse(this.props.location.search);
-      if(query.code){
-        console.log(query.code);
+      if(query.code != ""){
+        console.log("code "+query.code);
         localStorage.setItem("token", query.code);
         this.state.loggedIn = true;
         this.state.token=query.code;
         this.props.history.push('/');
+      }
+    }
+    else{
+      let token = localStorage.getItem("token");
+      if(token){
+        console.log("code "+token);
+        localStorage.setItem("token", token);
+        this.state.loggedIn = true;
+        this.state.token=token;
       }
     }
     console.log(this.state.token);
@@ -67,10 +76,21 @@ class App extends Component {
       })
   }
 
+  getStarred(){
+    console.log("Getting Starred!");
+    axios.get('/gists/favourite/', {
+      headers: {
+        'x-access-token': localStorage.getItem("token")
+      }
+    }).then(result => {
+      console.log(result);
+    });
+  }
+
   render() {
     return (
       <div className="App">
-        <Header loggedIn={this.state.loggedIn} />
+        <Header starred={this.getStarred} loggedIn={this.state.loggedIn} history={this.props.history}/>
         <div className="App-body">
           <GistsGroup data={this.state.data} />
           <Pager>

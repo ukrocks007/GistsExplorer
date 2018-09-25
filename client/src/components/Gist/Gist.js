@@ -18,7 +18,7 @@ class Gist extends Component {
                         </Col>
                         <Col xs={3} md={3}>
                         <Button>
-                            <Glyphicon glyph="star" /> {this.props.data.starred ? "UnStar" : "Star" }
+                            {this.props.data.starred ? "Remove from favourite" : "Add to favourite" }
                         </Button>
                         </Col>
                     </Row>
