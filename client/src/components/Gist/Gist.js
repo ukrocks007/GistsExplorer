@@ -9,33 +9,33 @@ class Gist extends Component {
         super(props);
 
         this.state = {starred : this.props.data.starred};
-        console.log("Props: "+this.props.data.starred);
+        console.log("Props: "+this.props.data);
     }
 
     addStar() {
         console.log(this.state.id);
-        axios.post('/gists/star/' + this.state.id, {
+        axios.post('/gists/star/' + this.props.data.id, {
             headers: {
               'x-access-token': ""+localStorage.getItem("token")
             }
             }).then(response => {
                 this.setState({});
             }).catch(err => {
-                var win = window.open("https://gist.github.com/"+this.state.id, '_blank');
+                var win = window.open("https://gist.github.com/"+this.props.data.id, '_blank');
                 win.focus();
             });
     }
 
     removeStar() {
         console.log(this.state.id);
-        axios.post('/gists/unstar/' + this.state.id, {
+        axios.post('/gists/unstar/' + this.props.data.id, {
             headers: {
               'x-access-token': localStorage.getItem("token")
             }
             }).then(response => {
             console.log(response);
         }).catch(err => {
-            var win = window.open("https://gist.github.com/"+this.state.id, '_blank');
+            var win = window.open("https://gist.github.com/"+this.props.data.id, '_blank');
             win.focus();
         });
     }
@@ -50,7 +50,7 @@ class Gist extends Component {
                         <Col xs={1} md={1}>
                             <Image src={this.props.data.avatarUrl} responsive circle />
                         </Col>
-                        <Col xs={4} md={8}>
+                        <Col xs={4} md={5}>
                             <p><a href={this.props.data.userUrl}>{this.props.data.user}</a> ( created on {new Date(this.props.data.createdOn).toDateString()} )</p>
                         </Col>
                         <Col xs={3} md={3}>
