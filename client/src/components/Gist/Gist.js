@@ -13,8 +13,8 @@ class Gist extends Component {
                         <Col xs={1} md={1}>
                             <Image src={this.props.data.avatarUrl} responsive circle />
                         </Col>
-                        <Col xs={8} md={8}>
-                            <p><a href={this.props.data.userUrl}>{this.props.data.user}</a> ( created on {this.props.data.createdOn} )</p>
+                        <Col xs={4} md={8}>
+                            <p><a href={this.props.data.userUrl}>{this.props.data.user}</a> ( created on {new Date(this.props.data.createdOn).toDateString()} )</p>
                         </Col>
                         <Col xs={3} md={3}>
                         <Button>

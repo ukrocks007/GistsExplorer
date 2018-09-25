@@ -62,6 +62,29 @@ module.exports = (app) => {
             });
     });
 
+    app.get('/gists/:page/:per_page', (req, res, next) => {
+        request
+            .get('https://api.github.com/gists/public?client_id=778f41cf857e92c6934d&client_secret=0056a9779340afe06b17ca53b1f7463badef7fcd&page='+req.params.page+'&per_page='+req.params.per_page)
+            .then(function (result) {
+                console.log("Got Gists list");
+                res.setHeader('Content-Type', 'application/json');
+                var data = JSON.parse(result.text);
+                console.log(data);
+                var array = data.map(function (gist, index) {
+                    return { 
+                        "key": gist.id,
+                        "createdOn": new Date(gist.created_at),
+                        "description": gist.description,
+                        "avatarUrl": gist.owner.avatar_url,
+                        "user": gist.owner.login,
+                        "userUrl": gist.html_url,
+                    };
+                });
+
+                res.send(array);
+            });
+    });
+
     app.get('/gists/favourite/', (req, res, next) => {
         console.log('Header: ' + req.headers['x-access-token']);
 
