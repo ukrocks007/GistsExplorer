@@ -41,10 +41,24 @@ module.exports = (app) => {
 
     app.get('/gists/', (req, res, next) => {
         request
-            .get('https://api.github.com/gists/public')
+            .get('https://api.github.com/gists/public?client_id=778f41cf857e92c6934d&client_secret=0056a9779340afe06b17ca53b1f7463badef7fcd')
             .then(function (result) {
+                console.log("Got Gists list");
                 res.setHeader('Content-Type', 'application/json');
-                res.send(result);
+                var data = JSON.parse(result.text);
+                console.log(data);
+                var array = data.map(function (gist, index) {
+                    return { 
+                        "key": gist.id,
+                        "createdOn": new Date(gist.created_at),
+                        "description": gist.description,
+                        "avatarUrl": gist.owner.avatar_url,
+                        "user": gist.owner.login,
+                        "userUrl": gist.html_url,
+                    };
+                });
+
+                res.send(array);
             });
     });
 
