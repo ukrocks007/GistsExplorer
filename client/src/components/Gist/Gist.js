@@ -1,8 +1,45 @@
 import React, { Component } from 'react';
 import './Gist.css';
 import {Panel,Row, Col, Grid, Image, Button, Glyphicon } from 'react-bootstrap';
+import axios from 'axios';
 
 class Gist extends Component {
+
+    constructor(props){
+        super(props);
+
+        this.state = {starred : this.props.data.starred};
+        console.log("Props: "+this.props.data.starred);
+    }
+
+    addStar() {
+        console.log(this.state.id);
+        axios.post('/gists/star/' + this.state.id, {
+            headers: {
+              'x-access-token': ""+localStorage.getItem("token")
+            }
+            }).then(response => {
+                this.setState({});
+            }).catch(err => {
+                var win = window.open("https://gist.github.com/"+this.state.id, '_blank');
+                win.focus();
+            });
+    }
+
+    removeStar() {
+        console.log(this.state.id);
+        axios.post('/gists/unstar/' + this.state.id, {
+            headers: {
+              'x-access-token': localStorage.getItem("token")
+            }
+            }).then(response => {
+            console.log(response);
+        }).catch(err => {
+            var win = window.open("https://gist.github.com/"+this.state.id, '_blank');
+            win.focus();
+        });
+    }
+
   render() {
     return (
       <div className="Gist">
@@ -17,7 +54,7 @@ class Gist extends Component {
                             <p><a href={this.props.data.userUrl}>{this.props.data.user}</a> ( created on {new Date(this.props.data.createdOn).toDateString()} )</p>
                         </Col>
                         <Col xs={3} md={3}>
-                        <Button>
+                        <Button onClick={this.props.data.starred ? this.removeStar.bind(this)  : this.addStar.bind(this)}>
                             {this.props.data.starred ? "Remove from favourite" : "Add to favourite" }
                         </Button>
                         </Col>

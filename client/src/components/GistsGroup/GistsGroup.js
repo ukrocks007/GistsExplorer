@@ -12,6 +12,7 @@ constructor(props){
         <div className="GistsGroup">
             {
             this.props.data.map(function(gist, index){
+                    console.log(gist);
                     return <Gist data={gist} />;
                 })
             }

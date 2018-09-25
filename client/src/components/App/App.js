@@ -20,6 +20,11 @@ class App extends Component {
       starred: false,
     }
 
+    this.nextPage = this.nextPage.bind(this);
+    this.previousPage = this.previousPage.bind(this);
+  }
+
+  componentWillMount(){
     console.log(this.props.location.search);
     if (this.props.location.search) {
       let query = querystring.parse(this.props.location.search);
@@ -43,11 +48,6 @@ class App extends Component {
       }
     }
     console.log(this.state.token);
-    this.nextPage = this.nextPage.bind(this);
-    this.previousPage = this.previousPage.bind(this);
-  }
-
-  componentWillMount(){
     this.showGists();
   }
 
@@ -89,7 +89,6 @@ class App extends Component {
         'x-access-token': localStorage.getItem("token")
       }
       }).then(response => {
-        console.log(response.data);
         this.setState({
           data: response.data
         });
