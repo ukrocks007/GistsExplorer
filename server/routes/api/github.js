@@ -6,7 +6,7 @@ var github = require('octonode');
 var useJWT = false;
 
 module.exports = (app) => {
-    app.get('/users/signin/callback', (req, res, next) => {
+    app.get('/getAccessToken', (req, res, next) => {
         const {
             query
         } = req;
@@ -36,12 +36,7 @@ module.exports = (app) => {
                     }, "" + config.secret, {
                         expiresIn: 86400 // expires in 24 hours
                     }) : op.body.access_token;
-                    res.cookie("token", token, {
-                        secure: true,
-                        maxAge: 120000,
-                        httpOnly: true
-                    });
-                    res.send();
+                    res.send(token);
                 });
         }
     });
@@ -72,7 +67,6 @@ module.exports = (app) => {
         request
             .get('https://api.github.com/gists/public?client_id=778f41cf857e92c6934d&client_secret=0056a9779340afe06b17ca53b1f7463badef7fcd&page=' + req.params.page + '&per_page=' + req.params.per_page)
             .then(function (result) {
-                console.log("Got Gists list");
                 res.setHeader('Content-Type', 'application/json');
                 var data = JSON.parse(result.text);
                 var array = data.map(function (gist, index) {
@@ -100,33 +94,56 @@ module.exports = (app) => {
                 message: 'No token provided.'
             });
         else {
-            // if (useJWT) {
-            //     jwt.verify(token, config.secret, function (err, decoded) {
-            //         if (err) return res.status(500).send({
-            //             auth: false,
-            //             message: 'Failed to authenticate token.'
-            //         });
-            //         console.log(decoded);
-            //         request
-            //             .get('https://api.github.com/gists/starred?access_token=' + decoded.token)
-            //             .then(function (result) {
-            //                 res.setHeader('Content-Type', 'application/json');
-            //                 res.send(result);
-            //             });
-            //     });
-            // } else {
+            if (useJWT) {
+                jwt.verify(token, config.secret, function (err, decoded) {
+                    if (err) return res.status(500).send({
+                        auth: false,
+                        message: 'Failed to authenticate token.'
+                    });
+                    console.log(decoded);
+                    request
+                        .get('https://api.github.com/gists/starred?access_token=' + decoded.token)
+                        .then(function (result) {
+                            res.setHeader('Content-Type', 'application/json');
+                            var data = JSON.parse(result.text);
+                            var array = data.map(function (gist, index) {
+                                return {
+                                    "key": gist.id,
+                                    "createdOn": new Date(gist.created_at),
+                                    "description": gist.description,
+                                    "avatarUrl": gist.owner.avatar_url,
+                                    "user": gist.owner.login,
+                                    "userUrl": gist.html_url,
+                                };
+                            });
+
+                            res.send(array);
+                        });
+                });
+            } else {
                 console.log("Requesting for starred gists");
                 request
                     .get('https://api.github.com/gists/starred?access_token=' + token)
                     .then(function (result) {
-                        console.log("got response for starred gists");
                         res.setHeader('Content-Type', 'application/json');
-                        res.send(result);
-                    }).catch(err=>{
+                            var data = JSON.parse(result.text);
+                            var array = data.map(function (gist, index) {
+                                return {
+                                    "key": gist.id,
+                                    "createdOn": new Date(gist.created_at),
+                                    "description": gist.description,
+                                    "avatarUrl": gist.owner.avatar_url,
+                                    "user": gist.owner.login,
+                                    "userUrl": gist.html_url,
+                                };
+                            });
+
+                            res.send(array);
+                    }).catch(err => {
                         console.log(err);
                         res.status(404).send(err);
                     });
-            // }
+            }
         }
     });
 

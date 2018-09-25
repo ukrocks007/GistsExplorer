@@ -21,14 +21,16 @@ class App extends Component {
     }
 
     console.log(this.props.location.search);
-    if(this.props.location.search){
+    if (this.props.location.search) {
       let query = querystring.parse(this.props.location.search);
-      if(query.code != ""){
-        console.log("code "+query.code);
-        localStorage.setItem("token", query.code);
-        this.state.loggedIn = true;
-        this.state.token=query.code;
+      if (query.code != "") {
+        this.setState({loggedIn : true});
         this.props.history.push('/');
+        axios.get('/getAccessToken?code=' + query.code).then(response => {
+          console.log(response.data);
+          localStorage.setItem("token", response.data);
+          this.setState({token : response.data});
+        });
       }
     }
     else{
@@ -45,8 +47,12 @@ class App extends Component {
     this.previousPage = this.previousPage.bind(this);
   }
 
-  async componentWillMount(){
-    await axios.get('/gists/'+this.state.page+'/'+this.state.per_page)
+  componentWillMount(){
+    this.showGists();
+  }
+
+  showGists(){
+    axios.get('/gists/'+this.state.page+'/'+this.state.per_page)
       .then(response => {
         //let array = JSON.parse(response);
         console.log(response.data);
@@ -82,15 +88,18 @@ class App extends Component {
       headers: {
         'x-access-token': localStorage.getItem("token")
       }
-    }).then(result => {
-      console.log(result);
-    });
-  }
+      }).then(response => {
+        console.log(response.data);
+        this.setState({
+          data: response.data
+        });
+      });
+      }
 
   render() {
     return (
       <div className="App">
-        <Header starred={this.getStarred} loggedIn={this.state.loggedIn} history={this.props.history}/>
+        <Header starred={this.getStarred.bind(this)} showGists={this.showGists.bind(this)} loggedIn={this.state.loggedIn} history={this.props.history}/>
         <div className="App-body">
           <GistsGroup data={this.state.data} />
           <Pager>

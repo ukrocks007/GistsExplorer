@@ -7,12 +7,27 @@ class Header extends Component {
 
     constructor(props){
         super(props);
-        this.state = {loggedIn : this.props.loggedIn};
+        this.state = {loggedIn : this.props.loggedIn, showStarred: false};
+        console.log("Header loggedIn: "+this.props.loggedIn);
     }
 
     logout() {
         localStorage.setItem("token", "");
         this.setState({loggedIn : false});
+    }
+
+    showStarred() {
+        if (!this.state.showStarred) {
+            this.setState({
+                showStarred: true
+            });
+            this.props.starred();
+        } else {
+            this.setState({
+                showStarred: false
+            });
+            this.props.showGists();
+        }
     }
 
     render() {
@@ -29,7 +44,7 @@ class Header extends Component {
             <Nav pullRight>
                 <NavItem eventKey={1} href="#">
                 {this.state.loggedIn ? 
-                    (<Button onClick={this.props.starred} bsStyle="primary">Starred</Button>) : ""}
+                    (<Button onClick={this.showStarred.bind(this)} bsStyle="primary">{this.state.showStarred ? "Show All" : "Show Favourites"}</Button>) : ""}
                 </NavItem>
                 {!this.state.loggedIn ? (
                 <NavItem eventKey={2} href="https://github.com/login/oauth/authorize?client_id=778f41cf857e92c6934d">
