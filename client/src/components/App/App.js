@@ -5,6 +5,7 @@ import Header from '../Header/Header';
 import GistsGroup from '../GistsGroup/GistsGroup';
 import axios from 'axios';
 import {Pager} from 'react-bootstrap';
+import querystring from 'query-string';
 
 class App extends Component {
 
@@ -13,11 +14,24 @@ class App extends Component {
 
     this.state = {
       loggedIn: false,
+      token: "",
       data: [],
       page: 1,
       per_page: 6,
     }
 
+    console.log(this.props.location.search);
+    if(this.props.location.search){
+      let query = querystring.parse(this.props.location.search);
+      if(query.code){
+        console.log(query.code);
+        localStorage.setItem("token", query.code);
+        this.state.loggedIn = true;
+        this.state.token=query.code;
+        this.props.history.push('/');
+      }
+    }
+    console.log(this.state.token);
     this.nextPage = this.nextPage.bind(this);
     this.previousPage = this.previousPage.bind(this);
   }
@@ -56,7 +70,7 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <Header />
+        <Header loggedIn={this.state.loggedIn} />
         <div className="App-body">
           <GistsGroup data={this.state.data} />
           <Pager>

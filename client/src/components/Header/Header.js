@@ -20,9 +20,17 @@ class Header extends Component {
                 <NavItem eventKey={1} href="#">
                     <Button bsStyle="primary">Starred</Button>
                 </NavItem>
+                {this.props.loggedIn ? (
                 <NavItem eventKey={2} href="https://github.com/login/oauth/authorize?client_id=778f41cf857e92c6934d">
                     <Button href="https://github.com/login/oauth/authorize?client_id=778f41cf857e92c6934d" bsStyle="link">Login With GitHub</Button>
                 </NavItem>
+                ) : 
+                (
+                <NavItem eventKey={3} >
+                    <Button onClick="" bsStyle="primary">Logout</Button>
+                </NavItem>
+                )
+                }
             </Nav>
         </Navbar.Collapse>
     </Navbar>
