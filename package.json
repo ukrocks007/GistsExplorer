@@ -1,18 +1,17 @@
 {
-  "name": "MERN-boilerplate",
+  "name": "gist-explorer",
   "version": "1.0.0",
-  "description": "MERN stack project boilerplate",
-  "author": "Eugene Cheung",
+  "description": "",
+  "author": "",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/arkon/MERN-boilerplate.git"
+    "url": ""
   },
   "license": "MIT",
   "private": true,
   "scripts": {
-    "start": "webpack -p --progress --profile --colors && node server",
     "start:client": "cd client && npm run start",
-    "start:dev": "concurrently \"node server\" \"npm run start:client\""
+    "start": "concurrently \"node server\" \"npm run start:client\""
   },
   "engines": {
     "node": ">=6"

@@ -9,7 +9,7 @@ class Gist extends Component {
         super(props);
 
         this.state = {starred : this.props.data.starred};
-        console.log("Props: "+this.props.data);
+        console.log(this.props.data.files);
     }
 
     addStar() {
@@ -50,7 +50,7 @@ class Gist extends Component {
                         <Col xs={1} md={1}>
                             <Image src={this.props.data.avatarUrl} responsive circle />
                         </Col>
-                        <Col xs={4} md={5}>
+                        <Col xs={4} md={4}>
                             <p><a href={this.props.data.userUrl}>{this.props.data.user}</a> ( created on {new Date(this.props.data.createdOn).toDateString()} )</p>
                         </Col>
                         <Col xs={3} md={3}>
@@ -61,7 +61,16 @@ class Gist extends Component {
                     </Row>
                 </Grid>
             </Panel.Heading>
-            <Panel.Body>{this.props.data.description}</Panel.Body>
+                <Panel.Body>
+                    {this.props.data.description}
+                    <ul>
+                    {
+                        this.props.data.files.map(function(file, index){
+                            return <li key={index}><a href={file.raw_url}>{file.filename}</a>{" "}{file.language}</li>;
+                        })
+                    }
+                    </ul>
+                </Panel.Body>
         </Panel>
       </div>
     );

@@ -44,6 +44,14 @@ module.exports = (app) => {
                 res.setHeader('Content-Type', 'application/json');
                 var data = JSON.parse(result.text);
                 var array = data.map(function (gist, index) {
+                    var files = [];
+
+                    for (var key in gist.files) {
+                        if (gist.files.hasOwnProperty(key)) {
+                            files.push(gist.files[key]);
+                        }
+                    }
+                    
                     return {
                         "id": gist.id,
                         "createdOn": new Date(gist.created_at),
@@ -51,6 +59,7 @@ module.exports = (app) => {
                         "avatarUrl": gist.owner.avatar_url,
                         "user": gist.owner.login,
                         "userUrl": gist.html_url,
+                        "files": gists.files,
                     };
                 });
 
@@ -64,7 +73,15 @@ module.exports = (app) => {
             .then(function (result) {
                 res.setHeader('Content-Type', 'application/json');
                 var data = JSON.parse(result.text);
+
                 var array = data.map(function (gist, index) {
+                    var files = [];
+
+                    for (var key in gist.files) {
+                        if (gist.files.hasOwnProperty(key)) {
+                            files.push(gist.files[key]);
+                        }
+                    }
                     return {
                         "id": gist.id,
                         "createdOn": new Date(gist.created_at),
@@ -72,6 +89,7 @@ module.exports = (app) => {
                         "avatarUrl": gist.owner.avatar_url,
                         "user": gist.owner.login,
                         "userUrl": gist.html_url,
+                        "files": files,
                     };
                 });
 
@@ -97,6 +115,15 @@ module.exports = (app) => {
                     res.setHeader('Content-Type', 'application/json');
                     var data = JSON.parse(result.text);
                     var array = data.map(function (gist, index) {
+
+                        var files = [];
+
+                        for (var key in gist.files) {
+                            if (gist.files.hasOwnProperty(key)) {
+                                files.push(gist.files[key]);
+                            }
+                        }
+
                         return {
                             "id": gist.id,
                             "createdOn": new Date(gist.created_at),
@@ -105,6 +132,7 @@ module.exports = (app) => {
                             "user": gist.owner.login,
                             "userUrl": gist.html_url,
                             "starred": true,
+                            "files": files,
                         };
                     });
 
@@ -136,8 +164,10 @@ module.exports = (app) => {
                     }
                 )
                 .then(r => console.log(r.status))
-                .catch(e => {console.log(e);
-                    res.status(404).send();}
+                .catch(e => {
+                    console.log(e);
+                    res.status(404).send();
+                }
                 );
 
 
